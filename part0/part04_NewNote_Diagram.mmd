@@ -1,0 +1,29 @@
+sequenceDiagram
+    participant browser
+    participant server
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
+    activate server
+    server-->>browser:  HTTP 302 Redirect to /notes
+    deactivate server
+
+    Note right of browser: Browser follows redirect and reloads the notes page
+
+    browser->>server: GET /notes
+    activate server
+    server-->>browser: HTML Document
+    deactivate server
+
+    note right of browser: HTML includes relative links to main.css and main.js
+
+    browser->>server: GET main.css, main.js
+    activate server
+    server-->>browser: CSS & JS
+    deactivate server
+
+    browser->>server: GET /data.json
+    activate server
+    server-->>browser: Notes in JSON
+    deactivate server
+
+    Note right of browser: JavaScript re-renders notes on the page
