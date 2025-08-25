@@ -1,12 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 import Names from './components/Names'
 import Filter from './components/Filter'
 import UserForm from './components/UserForm'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-1234567' }
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
@@ -28,6 +27,12 @@ const App = () => {
     setNewName('')
     setNewNumber('')
   }
+  useEffect(()=>{
+    axios.get('http://localhost:3001/persons')
+    .then(response=>{
+      setPersons(response.data)
+    }).catch(error=>console.error('error fetching persons',error))
+  },[])
   
   const searchedVal = persons.filter( (person)=> person.name.toLowerCase().includes(searchQuery.toLowerCase())) 
 
