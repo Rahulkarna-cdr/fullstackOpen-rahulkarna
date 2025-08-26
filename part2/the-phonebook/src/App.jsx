@@ -23,9 +23,12 @@ const App = () => {
       name: newName,
       number: newNumber
     }
-    setPersons(persons.concat(anObj))
-    setNewName('')
-    setNewNumber('')
+    axios.post('http://localhost:3001/persons',anObj)
+    .then((response)=>{
+      setPersons(persons.concat(anObj))
+      setNewName('')
+      setNewNumber('')
+    })
   }
   useEffect(()=>{
     axios.get('http://localhost:3001/persons')
