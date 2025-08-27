@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import phoneNums from './services/phonebook'
 import Names from './components/Names'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import UserForm from './components/UserForm'
 
 const App = () => {
@@ -9,6 +10,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
+  const [notify, setNotify] = useState(null)
+  const [errorMsg,setErrorMsg] = useState(null)
 
 
   //creating a newPerson and their Number
@@ -18,6 +21,8 @@ const App = () => {
 
     if (nameExists) {
       handleUpdate(nameExists.id)
+      setNewName('')
+      setNewNumber('') 
       return;
     }
     const anObj = {
@@ -28,10 +33,15 @@ const App = () => {
     .create(anObj)
     .then((returnedNum)=>{
       setPersons(persons.concat(returnedNum))
+      setNotify(`Added ${anObj.name}`)
+      setTimeout(()=>{
+        setNotify(null)
+      },5000)
       setNewName('')
       setNewNumber('')
     })
   }
+
   useEffect(()=>{
     phoneNums
     .getAll()
@@ -48,10 +58,15 @@ const App = () => {
     if(!confirmUpdate) return;
 
     phoneNums
-    .update(changeNum,id)
+    .update(id,changeNum)
     .then(modifyingNum =>{
       const updatedPersons = persons.map(person => person.id!==id?person: modifyingNum)
       setPersons(updatedPersons)
+      setNewName('')
+      setNewNumber('')
+    }).catch(error => {
+      setErrorMsg(`Information of ${existNum.name} has already been removed from the server`)
+      setTimeout(()=> setErrorMsg(null),5000)
     })
   }
   //Deleting a phone Number
@@ -62,10 +77,10 @@ const App = () => {
 
     phoneNums
     .deleteObj(id)
-  .then(response =>{
-    const updatedPhoneBook = persons.filter(person=> person.id!==id)
-    setPersons(updatedPhoneBook)
-  } ).catch(error => console.error('error deleting', error))
+    .then(response =>{
+      const updatedPhoneBook = persons.filter(person=> person.id!==id)
+      setPersons(updatedPhoneBook)
+  } ).catch((error) =>console.error('something went wrong', error))
   }
 
   const searchedVal = persons.filter( (person)=> person.name.toLowerCase().includes(searchQuery.toLowerCase())) 
@@ -75,9 +90,9 @@ const App = () => {
   
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMsg} notification={notify} />
       <Filter setSearchQuery={setSearchQuery} />
       <UserForm handlerFunc={handlerFunc} newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber}/>
-      
       <h2>Numbers</h2>
       <Names persons={searchedVal} deleteNum={deletingNumber}/>
     </div>
