@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+app.use(express.json())
 
 let persons =[
   { 
@@ -29,14 +30,17 @@ let persons =[
   }
 ]
 
-app.get('/', (request,response)=>{
+app.post('/api/persons',(request,response)=>{
+  const {name, number} = request.body
+  const newPerson = {
+    id: Math.floor(Math.random()*100000),
+    name,number
+  }
+  persons = persons.concat(newPerson)
   response.json(persons)
 })
-app.delete('/api/persons/:id', (request,response)=>{
-  const id = request.params.id
-  persons = persons.filter((person) => person.id !==id)
-  response.status(204).end()
-})
+
+
 const port = 3001
 app.listen(port)
-console.log(`server has started at port ${port}`)
+console.log(`the server is started at port ${port}`)
