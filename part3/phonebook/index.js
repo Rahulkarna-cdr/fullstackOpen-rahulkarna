@@ -1,7 +1,11 @@
 const express = require('express')
 const app = express()
+const cors = require('cors')
 const morgan = require('morgan')
+
+app.use(cors())
 app.use(express.json())
+
 
 
 morgan.token('post-data',(request)=>{
@@ -38,25 +42,29 @@ let persons =[
   }
 ]
 
-app.post('/api/persons',(request,response)=>{
-  const {name, number} = request.body
-
-  if(!name|| !number){
-    return response.status(400).json({error:'number or name is missing'})
-  }
-
-  const nameExist = persons.some(person => person.name === name)
-  if(nameExist){
-    return response.status(400).json({error: 'name must be unique'})
-  }
-  
-  const newPerson = {
-    id: Math.floor(Math.random()*100000),
-    name,number
-  }
-  persons = persons.concat(newPerson)
+app.get('/api/persons',(request, response)=>{
   response.json(persons)
 })
+
+// app.post('/api/persons',(request,response)=>{
+//   const {name, number} = request.body
+
+//   if(!name|| !number){
+//     return response.status(400).json({error:'number or name is missing'})
+//   }
+
+//   const nameExist = persons.some(person => person.name === name)
+//   if(nameExist){
+//     return response.status(400).json({error: 'name must be unique'})
+//   }
+  
+//   const newPerson = {
+//     id: Math.floor(Math.random()*100000),
+//     name,number
+//   }
+//   persons = persons.concat(newPerson)
+//   response.json(persons)
+// })
 
 
 const port = 3001
