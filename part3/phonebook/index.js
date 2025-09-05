@@ -5,6 +5,7 @@ const morgan = require('morgan')
 
 app.use(cors())
 app.use(express.json())
+app.use(express.static('dist'))
 
 
 
@@ -46,27 +47,27 @@ app.get('/api/persons',(request, response)=>{
   response.json(persons)
 })
 
-// app.post('/api/persons',(request,response)=>{
-//   const {name, number} = request.body
+app.post('/api/persons',(request,response)=>{
+  const {name, number} = request.body
 
-//   if(!name|| !number){
-//     return response.status(400).json({error:'number or name is missing'})
-//   }
+  if(!name|| !number){
+    return response.status(400).json({error:'number or name is missing'})
+  }
 
-//   const nameExist = persons.some(person => person.name === name)
-//   if(nameExist){
-//     return response.status(400).json({error: 'name must be unique'})
-//   }
+  const nameExist = persons.some(person => person.name === name)
+  if(nameExist){
+    return response.status(400).json({error: 'name must be unique'})
+  }
   
-//   const newPerson = {
-//     id: Math.floor(Math.random()*100000),
-//     name,number
-//   }
-//   persons = persons.concat(newPerson)
-//   response.json(persons)
-// })
+  const newPerson = {
+    id: Math.floor(Math.random()*100000),
+    name,number
+  }
+  persons = persons.concat(newPerson)
+  response.json(persons)
+})
 
 
-const port = 3001
-app.listen(port)
-console.log(`the server is started at port ${port}`)
+const PORT = process.env.PORT ? process.env.PORT : 3001
+app.listen(PORT)
+console.log(`the server is started at port ${PORT}`)
