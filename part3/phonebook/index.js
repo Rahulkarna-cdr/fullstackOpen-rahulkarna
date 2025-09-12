@@ -1,7 +1,10 @@
+require('dotenv').config()
+
 const express = require('express')
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
+const Person = require('../phonebook/models/person')
 
 app.use(cors())
 app.use(express.json())
@@ -15,36 +18,10 @@ morgan.token('post-data',(request)=>{
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post-data '))
 
-let persons =[
-  { 
-    "id": "1",
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": "2",
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": "3",
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": "4",
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122"
-  },
-  { 
-    "id": "5",
-    "name": "Ruby Roundhouse", 
-    "number": "45-56-2568458"
-  }
-]
 
 app.get('/api/persons',(request, response)=>{
-  response.json(persons)
+  Person.find({}).then(result =>{
+  response.status(200).json(result)})
 })
 
 app.post('/api/persons',(request,response)=>{
@@ -54,17 +31,16 @@ app.post('/api/persons',(request,response)=>{
     return response.status(400).json({error:'number or name is missing'})
   }
 
-  const nameExist = persons.some(person => person.name === name)
-  if(nameExist){
-    return response.status(400).json({error: 'name must be unique'})
-  }
-  
-  const newPerson = {
-    id: Math.floor(Math.random()*100000),
-    name,number
-  }
-  persons = persons.concat(newPerson)
-  response.json(persons)
+  Person.findOne({ name }).then(existingPerson => {
+    if(existingPerson){
+      return response.status(400).json({error: 'name must be unique'})
+    }
+    
+    const newPerson = new Person( { name, number})
+    newPerson.save().then(savedPerson=> {
+      response.json(savedPerson)
+    })
+  })
 })
 
 
