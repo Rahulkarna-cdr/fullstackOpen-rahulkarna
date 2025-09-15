@@ -43,6 +43,12 @@ app.post('/api/persons',(request,response)=>{
   })
 })
 
+app.delete('/api/persons/:id', (request,response,next)=>{
+  Person.findByIdAndDelete(request.params.id)
+  .then(()=>response.status(204).end())
+  .catch(error => next(error))
+}) 
+
 
 const PORT = process.env.PORT ? process.env.PORT : 3001
 app.listen(PORT)
