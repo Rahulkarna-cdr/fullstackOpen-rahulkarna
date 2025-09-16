@@ -64,6 +64,29 @@ app.put('/api/persons/:id', (request,response, next)=>{
     .catch(error => next(error))
 })
 
+app.get('/api/persons/:id', (request,response, next)=>{
+
+  Person.findById(request.params.id)
+  .then(person =>{
+    if(!person){
+      return response.status(404).end()
+    }
+    
+    response.status(200).json(person)
+    
+  })
+  .catch(error => next(error))
+})
+
+app.get('/info', (request, response, next) => {
+  Person.countDocuments({})
+    .then(count => {
+      const date = new Date()
+      response.send(`<p>Phonebook has info for ${count} people</p><p>${date}</p>`)
+    })
+    .catch(error => next(error))
+})
+
 
 app.delete('/api/persons/:id', (request,response,next)=>{
   Person.findByIdAndDelete(request.params.id)
