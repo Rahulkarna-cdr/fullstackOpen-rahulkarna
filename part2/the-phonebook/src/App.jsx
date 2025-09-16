@@ -40,6 +40,15 @@ const App = () => {
       setNewName('')
       setNewNumber('')
     })
+    .catch(error =>{
+      if (error.response?.data?.error) {
+        setErrorMsg(error.response.data.error)
+        setTimeout(()=> setErrorMsg(null),5000)
+      }
+      else{
+        console.error('Error creating Person:', error)
+      }
+    })
   }
 
   useEffect(()=>{
