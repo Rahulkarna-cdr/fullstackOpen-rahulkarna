@@ -105,21 +105,39 @@ test("show 400 Bad request when title or url properties are missing", async () =
 
         // })
 
-    test('a blog can be deleted', async () => {
-  const blogsAtStart = await testHelper.blogsInDb()
-  const blogToDelete = blogsAtStart[0]
+    test('deletes the blog', async () => {
+  const firstBlog = await testHelper.blogsInDb()
+  const blogToDelete = firstBlog[0]
 
   await api
     .delete(`/api/blogs/${blogToDelete.id}`)
     .expect(204)
 
-  const blogsAtEnd = await testHelper.blogsInDb()
+  const lastBlog = await testHelper.blogsInDb()
 
-  const titles = blogsAtEnd.map(n => n.title)
+  const titles = lastBlog.map(n => n.title)
   assert(!titles.includes(blogToDelete.content))
 
-  assert.strictEqual(blogsAtEnd.length, testHelper.initialBlogs.length - 1)
+  assert.strictEqual(lastBlog.length, testHelper.initialBlogs.length - 1)
 })
+
+test('updates the blog', async () => {
+  const firstBlog = await testHelper.blogsInDb()
+  const blogToUpdate = firstBlog[0]
+  const updatedData={likes:blogToUpdate.likes+100}
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedData)
+    .expect(200)
+
+
+  const blogsUpdated = await testHelper.blogsInDb()
+  const updatedBlog=blogsUpdated.find(blog=>blog.id===blogToUpdate.id)
+
+
+  assert.strictEqual(updatedBlog.likes,updatedData.likes)
+})
+
 after(async () => {
   await mongoose.connection.close();
 });
