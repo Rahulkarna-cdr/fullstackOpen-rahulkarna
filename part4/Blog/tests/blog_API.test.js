@@ -89,6 +89,22 @@ test.only("blogs are successfully created..", async()=>{
      const anotherResponse = await api.get('/api/blogs')
     assert.strictEqual(anotherResponse.body.length, initialBlogs.length+1)
 })
+
+test('like property is missing then default to zero', async ()=>{
+    const anotherNewBlog = {
+        title: 'Refactoring',
+        author: 'Martin Fowler',
+        url: 'www.refactoring.com'
+    }
+
+    const response = await api
+    .post('/api/blogs')
+    .send(anotherNewBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+    assert.strictEqual(response.body.likes,0)
+})
 after(async () => {
   await mongoose.connection.close()
 })
