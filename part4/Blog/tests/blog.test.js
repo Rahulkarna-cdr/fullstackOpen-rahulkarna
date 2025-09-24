@@ -90,27 +90,29 @@ describe("FavoriteBlog Function", () => {
 
   const singleBlog = [
     {
-    _id: "5a422aa71b54a676234d1801",
-    title: "Domain-Driven Design: Tackling Complexity in the Heart of Software",
-    author: "Eric Evans",
-    url: "https://www.example.com/domain-driven-design",
-    likes: 18,
-    __v: 0,
-    }
-  ]
+      _id: "5a422aa71b54a676234d1801",
+      title:
+        "Domain-Driven Design: Tackling Complexity in the Heart of Software",
+      author: "Eric Evans",
+      url: "https://www.example.com/domain-driven-design",
+      likes: 18,
+      __v: 0,
+    },
+  ];
 
-  test('returns the only present blog', ()=>{
+  test("returns the only present blog", () => {
     const result = listHelper.favoriteBlog(singleBlog);
-    const expected=  {
-    _id: "5a422aa71b54a676234d1801",
-    title: "Domain-Driven Design: Tackling Complexity in the Heart of Software",
-    author: "Eric Evans",
-    url: "https://www.example.com/domain-driven-design",
-    likes: 18,
-    __v: 0,
-    }
-    assert.deepStrictEqual(result,expected)
-  })
+    const expected = {
+      _id: "5a422aa71b54a676234d1801",
+      title:
+        "Domain-Driven Design: Tackling Complexity in the Heart of Software",
+      author: "Eric Evans",
+      url: "https://www.example.com/domain-driven-design",
+      likes: 18,
+      __v: 0,
+    };
+    assert.deepStrictEqual(result, expected);
+  });
 
   const blogs = [
     {
@@ -141,7 +143,7 @@ describe("FavoriteBlog Function", () => {
 
   test("return the blog with most likes", () => {
     const result = listHelper.favoriteBlog(blogs);
-    const expected =     {
+    const expected = {
       _id: "5a422aa71b54a676234d17ff",
       title: "The Pragmatic Programmer: Your Journey to Mastery",
       author: "Andrew Hunt",
@@ -152,4 +154,74 @@ describe("FavoriteBlog Function", () => {
 
     assert.deepStrictEqual(result, expected);
   });
+});
+
+describe("Author with most blogs", () => {
+  //empty blog
+  const emptyBlog = [];
+
+  test("returns the blog is empty", () => {
+    const result = listHelper.mostBlogs(emptyBlog);
+    const expected = "its empty";
+    assert.deepStrictEqual(result, expected);
+  });
+
+  //single blog
+  const singleBlog = [
+    {
+      _id: "5a422aa71b54a676234d1802",
+      title: "Software Architecture: The Hard Parts",
+      author: "Neal Ford",
+      number_of_blogs: 7,
+      likes: 54,
+      _v: 0,
+    },
+  ];
+  test("returns the author name and number of blogs of the only present blog", () => {
+    const result = listHelper.mostBlogs(singleBlog);
+    const expected = "Neal Ford has 7 blogs";
+    assert.deepStrictEqual(result, expected);
+  });
+
+  const manyBlogs = [
+    {
+      _id: "5a422aa71b54a676234d1802",
+      title: "Software Architecture: The Hard Parts",
+      author: "Neal Ford",
+      number_of_blogs: 7,
+      likes: 54,
+      _v: 0,
+    },
+    {
+      _id: "5a422aa71b54a676234d1803",
+      title: "Design Patterns: Elements of Reusable Object-Oriented Software",
+      author: "Erich Gamma",
+      number_of_blogs: 10,
+      likes: 67,
+      _v: 0,
+    },
+    {
+      _id: "5a422aa71b54a676234d1804",
+      title: "The Mythical Man-Month",
+      author: "Frederick P. Brooks Jr.",
+      number_of_blogs: 5,
+      likes: 34,
+      _v: 0,
+    },
+    {
+      _id: "5a422aa71b54a676234d1805",
+      title:
+        "Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation",
+      author: "Jez Humble",
+      number_of_blogs: 8,
+      likes: 48,
+      _v: 0,
+    },
+  ];
+
+  test("returns the name of the author who has the most number of blogs", ()=>{
+    const result = listHelper.mostBlogs(manyBlogs);
+    const expected = "Erich Gamma has the most blogs i.e. 10"
+    assert.deepStrictEqual(result,expected)
+  })
 });
