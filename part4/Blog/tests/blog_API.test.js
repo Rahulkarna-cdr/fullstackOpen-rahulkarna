@@ -1,64 +1,62 @@
-const { test, after, beforeEach } = require('node:test')
-const mongoose = require('mongoose')
-const supertest = require('supertest')
-const app = require('../app')
-const assert = require('node:assert')
-const Blog = require('../models/blog')
+const { test, after, beforeEach } = require("node:test");
+const mongoose = require("mongoose");
+const supertest = require("supertest");
+const app = require("../app");
+const assert = require("node:assert");
+const Blog = require("../models/blog");
 
-const api = supertest(app)
+const api = supertest(app);
 
 const initialBlogs = [
   {
-    title: 'Software Architecture: The Hard Parts',
-    author: 'Neal Ford',
-    url: 'www.nealFord.com',
+    title: "Software Architecture: The Hard Parts",
+    author: "Neal Ford",
+    url: "www.nealFord.com",
     likes: 54,
   },
   {
-    title: 'Clean Code',
-    author: 'Robert C. Martin',
-    url: 'www.cleancode.com',
+    title: "Clean Code",
+    author: "Robert C. Martin",
+    url: "www.cleancode.com",
     likes: 75,
   },
   {
-    title: 'Design Patterns',
-    author: 'Erich Gamma',
-    url: 'www.designpatterns.com',
+    title: "Design Patterns",
+    author: "Erich Gamma",
+    url: "www.designpatterns.com",
     likes: 100,
-  }
-]
+  },
+];
 
+beforeEach(async () => {
+  await Blog.deleteMany({});
 
-beforeEach(async ()=>{
-    await Blog.deleteMany({})
+  let blogObj = new Blog(initialBlogs[0]);
+  await blogObj.save();
 
-    let blogObj = new Blog(initialBlogs[0])
-    await blogObj.save()
+  blogObj = new Blog(initialBlogs[1]);
+  await blogObj.save();
 
-    blogObj = new Blog(initialBlogs[1])
-    await blogObj.save()
+  blogObj = new Blog(initialBlogs[2]);
+  await blogObj.save();
+});
 
-    blogObj = new Blog(initialBlogs[2])
-    await blogObj.save()
-})
-
-
-test.only('blogs are returned as json', async () => {
+test.only("blogs are returned as json", async () => {
   await api
-    .get('/api/blogs')
+    .get("/api/blogs")
     .expect(200)
-    .expect('Content-Type', /application\/json/)
-})
+    .expect("Content-Type", /application\/json/);
+});
 
-test.only("All blogs are returned", async ()=>{
-    const res = await api.get('/api/blogs')
+test.only("All blogs are returned", async () => {
+  const res = await api.get("/api/blogs");
 
-    assert.strictEqual(res.body.length, 3)
-})
+  assert.strictEqual(res.body.length, 3);
+});
 
-test.only('unique identifier property of the blog posts is named id', async()=>{
-    const response = await api.get('/api/blogs')
-/* In 'response' we have something like this
+test.only("unique identifier property of the blog posts is named id", async () => {
+  const response = await api.get("/api/blogs");
+  /* In 'response' we have something like this
 {
   statusCode: 200,
   headers: { ... },
@@ -67,44 +65,59 @@ test.only('unique identifier property of the blog posts is named id', async()=>{
   ...
 }
   */
-    const blogs = response.body
-   assert.ok(blogs[0].id, "id property is missing");
-})
+  const blogs = response.body;
+  assert.ok(blogs[0].id, "id property is missing");
+});
 
-test.only("blogs are successfully created..", async()=>{
-    const newBlog =
-        {
-            title: 'Journey to the center of the Earth',
-            author: 'Martin damsel',
-            url: 'www.centerearth.com',
-            likes: 46
-        }
+test.only("blogs are successfully created..", async () => {
+  const newBlog = {
+    title: "Journey to the center of the Earth",
+    author: "Martin damsel",
+    url: "www.centerearth.com",
+    likes: 46,
+  };
 
-    const response = await api
-    .post('/api/blogs')
+  const response = await api
+    .post("/api/blogs")
     .send(newBlog)
     .expect(201)
-    .expect('Content-Type',/application\/json/)
+    .expect("Content-Type", /application\/json/);
 
-     const anotherResponse = await api.get('/api/blogs')
-    assert.strictEqual(anotherResponse.body.length, initialBlogs.length+1)
-})
+  const anotherResponse = await api.get("/api/blogs");
+  assert.strictEqual(anotherResponse.body.length, initialBlogs.length + 1);
+});
 
-test('like property is missing then default to zero', async ()=>{
-    const anotherNewBlog = {
-        title: 'Refactoring',
-        author: 'Martin Fowler',
-        url: 'www.refactoring.com'
-    }
+test("like property is missing then default to zero", async () => {
+  const anotherNewBlog = {
+    title: "Refactoring",
+    author: "Martin Fowler",
+    url: "www.refactoring.com",
+  };
 
-    const response = await api
-    .post('/api/blogs')
+  const response = await api
+    .post("/api/blogs")
     .send(anotherNewBlog)
     .expect(201)
-    .expect('Content-Type', /application\/json/)
+    .expect("Content-Type", /application\/json/);
 
-    assert.strictEqual(response.body.likes,0)
-})
+  assert.strictEqual(response.body.likes, 0);
+});
+
+test("show 400 Bad request when title or url properties are missing", async () => {
+  const brokenBlogs = {
+    author: "David Corenswet",
+    likes: 78,
+  };
+
+  const response = await api
+    .post("/api/blogs")
+    .send(brokenBlogs)
+    .expect(400)
+    .expect("Content-Type", /application\/json/);
+
+//   assert.ok(response.body.error.includes("title"));
+//   assert.ok(response.body.error.includes("url"));
+});
 after(async () => {
-  await mongoose.connection.close()
-})
+  await mongoose.connection.close();
+});

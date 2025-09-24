@@ -10,6 +10,9 @@ blogRouter.get('/', (request, response) => {
 
 blogRouter.post('/', (request, response) => {
   const blog = new Blog(request.body)
+  if(!blog.title || !blog.url){
+  return response.status(400).json({ error: 'url and title both are required' })
+  }
 
   blog.save().then((result) => {
     response.status(201).json(result)
