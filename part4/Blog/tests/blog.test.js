@@ -225,3 +225,74 @@ describe("Author with most blogs", () => {
     assert.deepStrictEqual(result,expected)
   })
 });
+
+describe("Author with most Likes", () => {
+  //empty blog
+  const emptyBlog = [];
+
+  test("returns the blog is empty", () => {
+    const result = listHelper.mostBlogs(emptyBlog);
+    const expected = "its empty";
+    assert.deepStrictEqual(result, expected);
+  });
+
+  //single blog
+  const singleBlog = [
+    {
+      _id: "5a422aa71b54a676234d1802",
+      title: "Software Architecture: The Hard Parts",
+      author: "Neal Ford",
+      number_of_blogs: 7,
+      likes: 54,
+      _v: 0,
+    },
+  ];
+  test("returns the author name and number of Likes of the only present blog", () => {
+    const result = listHelper.mostLikes(singleBlog);
+    const expected = "Neal Ford has 54 likes";
+    assert.deepStrictEqual(result, expected);
+  });
+
+  const manyBlogs = [
+    {
+      _id: "5a422aa71b54a676234d1802",
+      title: "Software Architecture: The Hard Parts",
+      author: "Neal Ford",
+      number_of_blogs: 7,
+      likes: 54,
+      _v: 0,
+    },
+    {
+      _id: "5a422aa71b54a676234d1803",
+      title: "Design Patterns: Elements of Reusable Object-Oriented Software",
+      author: "Erich Gamma",
+      number_of_blogs: 10,
+      likes: 67,
+      _v: 0,
+    },
+    {
+      _id: "5a422aa71b54a676234d1804",
+      title: "The Mythical Man-Month",
+      author: "Frederick P. Brooks Jr.",
+      number_of_blogs: 5,
+      likes: 34,
+      _v: 0,
+    },
+    {
+      _id: "5a422aa71b54a676234d1805",
+      title:
+        "Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation",
+      author: "Jez Humble",
+      number_of_blogs: 8,
+      likes: 48,
+      _v: 0,
+    },
+  ];
+
+  test("returns the name of the author who has the most likes on the blogs", ()=>{
+    const result = listHelper.mostLikes(manyBlogs);
+    const expected = "Erich Gamma has the most likes i.e. 67"
+    assert.deepStrictEqual(result,expected)
+  })
+});
+
