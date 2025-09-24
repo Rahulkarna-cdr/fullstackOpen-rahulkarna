@@ -13,7 +13,7 @@ describe("total likes", () => {
   const listWithNoBlog = [];
   test("of empty list is zero", () => {
     const result = listHelper.totalLikes(listWithNoBlog);
-    assert.strictEqual(result,0);
+    assert.strictEqual(result, 0);
   });
 
   const listWithOneBlog = [
@@ -75,8 +75,81 @@ describe("total likes", () => {
     },
   ];
 
-  test("of a bigger list is calculated right",()=>{
-    const result = listHelper.totalLikes(listWithManyBlog)
-    assert.strictEqual(result,80)
+  test("of a bigger list is calculated right", () => {
+    const result = listHelper.totalLikes(listWithManyBlog);
+    assert.strictEqual(result, 80);
+  });
+});
+
+describe("FavoriteBlog Function", () => {
+  const emptyBlog = [];
+  test("returns empty when the blog is empty", () => {
+    const result = listHelper.favoriteBlog(emptyBlog);
+    assert.strictEqual(result, null);
+  });
+
+  const singleBlog = [
+    {
+    _id: "5a422aa71b54a676234d1801",
+    title: "Domain-Driven Design: Tackling Complexity in the Heart of Software",
+    author: "Eric Evans",
+    url: "https://www.example.com/domain-driven-design",
+    likes: 18,
+    __v: 0,
+    }
+  ]
+
+  test('returns the only present blog', ()=>{
+    const result = listHelper.favoriteBlog(singleBlog);
+    const expected=  {
+    _id: "5a422aa71b54a676234d1801",
+    title: "Domain-Driven Design: Tackling Complexity in the Heart of Software",
+    author: "Eric Evans",
+    url: "https://www.example.com/domain-driven-design",
+    likes: 18,
+    __v: 0,
+    }
+    assert.deepStrictEqual(result,expected)
   })
+
+  const blogs = [
+    {
+      _id: "5a422aa71b54a676234d17fe",
+      title: "Clean Code: A Handbook of Agile Software Craftsmanship",
+      author: "Robert C. Martin",
+      url: "https://www.example.com/clean-code",
+      likes: 35,
+      __v: 0,
+    },
+    {
+      _id: "5a422aa71b54a676234d17ff",
+      title: "The Pragmatic Programmer: Your Journey to Mastery",
+      author: "Andrew Hunt",
+      url: "https://www.example.com/pragmatic-programmer",
+      likes: 42,
+      __v: 0,
+    },
+    {
+      _id: "5a422aa71b54a676234d1800",
+      title: "You Don't Know JS: Scope & Closures",
+      author: "Kyle Simpson",
+      url: "https://www.example.com/ydkjs-scope-closures",
+      likes: 27,
+      __v: 0,
+    },
+  ];
+
+  test("return the blog with most likes", () => {
+    const result = listHelper.favoriteBlog(blogs);
+    const expected =     {
+      _id: "5a422aa71b54a676234d17ff",
+      title: "The Pragmatic Programmer: Your Journey to Mastery",
+      author: "Andrew Hunt",
+      url: "https://www.example.com/pragmatic-programmer",
+      likes: 42,
+      __v: 0,
+    };
+
+    assert.deepStrictEqual(result, expected);
+  });
 });
