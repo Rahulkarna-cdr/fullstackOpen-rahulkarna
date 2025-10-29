@@ -4,7 +4,7 @@ const unknownEndPoint = async (req, res) => {
   res.status(404).json({ error: "unknown endpoint" });
 };
 
-const tokenVerification = async (req, res, next) => {
+const tokenExtractor = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return res.status(404).json({ error: "Token missing" });
@@ -32,4 +32,4 @@ const errorHandler = async (error, req, res, next) => {
   next(error);
 };
 
-module.exports = { unknownEndPoint, errorHandler, tokenVerification };
+module.exports = { unknownEndPoint, errorHandler, tokenExtractor };
