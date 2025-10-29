@@ -10,6 +10,17 @@ const tokenExtractor = async (req, res, next) => {
     return res.status(401).json({ error: "Token missing" });
   }
   const token = authHeader.split(" ")[1];
+  req.token = token;
+  next();
+};
+
+const userExtractor = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: "Token missing" });
+  }
+  const token = authHeader.split(" ")[1];
+
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
     req.user = decoded;
@@ -32,4 +43,4 @@ const errorHandler = async (error, req, res, next) => {
   next(error);
 };
 
-module.exports = { unknownEndPoint, errorHandler, tokenExtractor };
+module.exports = { unknownEndPoint, errorHandler, tokenExtractor, userExtractor};
