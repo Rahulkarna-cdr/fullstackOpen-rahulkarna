@@ -7,7 +7,7 @@ const unknownEndPoint = async (req, res) => {
 const tokenExtractor = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
-    return res.status(404).json({ error: "Token missing" });
+    return res.status(401).json({ error: "Token missing" });
   }
   const token = authHeader.split(" ")[1];
   try {
