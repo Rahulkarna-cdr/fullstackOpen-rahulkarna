@@ -10,6 +10,9 @@ loginRouter.post("/", async (req, res) => {
   try {
     //server verifies the credentials
     const user = await User.findOne({ username });
+    if(!user){
+      return res.status(400).json({error:"invalid user"})
+    }
     user.password === null
       ? false
       : await bcrypt.compare(password, user.passwordHash);
@@ -28,7 +31,7 @@ loginRouter.post("/", async (req, res) => {
     }
     res
       .status(200)
-      .json({ msg: "Token successfully received by client", token: webtoken });
+      .json({token: webtoken, username: user.username, name:user.name });
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: "something went wrong" });
