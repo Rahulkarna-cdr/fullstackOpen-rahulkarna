@@ -31,7 +31,7 @@ loginRouter.post("/", async (req, res) => {
     }
     res
       .status(200)
-      .json({token: webtoken, username: user.username, name:user.name });
+      .json({token: webtoken, username: user.username, name:user.name, id:user.id });
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: "something went wrong" });

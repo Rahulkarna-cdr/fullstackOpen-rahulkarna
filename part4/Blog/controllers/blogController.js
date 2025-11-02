@@ -11,40 +11,40 @@ blogRouter.get("/", async (request, response) => {
   response.status(200).json(blogs);
 });
 
-blogRouter.post("/", (request, response) => {
-  const body = request.body;
-  const newBlog = new Blog(request.body);
-  if (!newBlog.title || !newBlog.url) {
-    return response
-      .status(400)
-      .json({ error: "url and title both are required" });
+blogRouter.post("/", async (request, response) => {
+  try {
+    const body = request.body;
+
+    const newBlog = new Blog(body);
+
+    if (!newBlog.title || !newBlog.url) {
+      return response
+        .status(400)
+        .json({ error: "url and title both are required" });
+    }
+
+    const savedBlog = await newBlog.save();
+
+    const user = await User.findById(body.user);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    user.blogs = user.blogs.concat(savedBlog.id);
+
+    await user.save();
+
+    response.status(201).json(savedBlog);
+
+  } catch (error) {
+    console.error("Error creating blog:", error.message);
+    response
+      .status(500)
+      .json({ error: "Something went wrong while creating the Blog." });
   }
-
-  let savedBlog;
-
-  newBlog
-    .save()
-    .then((result) => {
-      savedBlog = result;
-      return User.findById(body.user);
-    })
-    .then((user) => {
-      if (!user) {
-        return response.status(404).json({ error: "User not found" });
-      }
-
-      user.blogs = user.blogs.concat(savedBlog.id);
-      return user.save();
-    })
-    .then(() => {
-      response.status(201).json(savedBlog);
-    })
-    .catch((error) => {
-      response
-        .status(500)
-        .json({ error: "Something went wrong while creating the Blog." });
-    });
 });
+
 
 blogRouter.delete("/:id", async (request, response) => {
   const blogID = request.params.id;

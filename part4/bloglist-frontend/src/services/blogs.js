@@ -1,19 +1,18 @@
-import axios from "axios";
 const baseUrl = "/api/blogs";
-const baseUrlLogin = "/api/login";
-
 
 //extracting token to authenticate user
+const getToken = () => {
 const loggedUserJSON = localStorage.getItem("loggedUser");
-let token = null;
-
 if (loggedUserJSON) {
   const user = JSON.parse(loggedUserJSON);
-  token = user.token; 
+  return user.token;
+}
+return null;
 }
 
 const getAll = async () => {
   try {
+    const token = getToken();
     const response = await fetch(baseUrl, {
       method: "GET",
       headers:{
@@ -26,14 +25,34 @@ const getAll = async () => {
     }
     else{
       console.log("server returned some errors", response.status)
+      return []
     }
   } catch (error) {
-    console.error("error fetching data");
+    console.error("error fetching data",error);
+    return []
   }
 };
 
-// const login = async (newObject) => {
-//   const request = await axios.post(baseUrlLogin, newObject);
-//   return request.data;
-// };
-export default { getAll };
+const createBlog = async(blogObj)=>{
+  try{
+    const token = getToken();
+    const response = await fetch(baseUrl,{
+      method: "POST",
+      headers:{
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(blogObj)
+    })
+    if(!response.ok){
+      throw new Error("something went wrong", response.status)
+    }
+    const data = await response.json()
+    return data
+  }catch(error){
+    console.error("unable to create blog")
+  }
+}
+
+
+export default { getAll, createBlog };
