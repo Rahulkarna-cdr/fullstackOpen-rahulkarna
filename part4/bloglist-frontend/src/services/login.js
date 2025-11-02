@@ -8,6 +8,9 @@ const login=async (newObj)=>{
         },
         body: JSON.stringify(newObj)
     })
+    if(!response.ok){
+        throw new Error("invalid user")
+    }
     const data = await response.json()
     return data
 

@@ -2,57 +2,58 @@ const baseUrl = "/api/blogs";
 
 //extracting token to authenticate user
 const getToken = () => {
-const loggedUserJSON = localStorage.getItem("loggedUser");
-if (loggedUserJSON) {
-  const user = JSON.parse(loggedUserJSON);
-  return user.token;
-}
-return null;
-}
+  const loggedUserJSON = localStorage.getItem("loggedUser");
+  if (loggedUserJSON) {
+    const user = JSON.parse(loggedUserJSON);
+    return user.token;
+  }
+  return null;
+};
 
 const getAll = async () => {
   try {
     const token = getToken();
     const response = await fetch(baseUrl, {
       method: "GET",
-      headers:{
-        Authorization: `Bearer ${token}`
-      }
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-    if(response.ok){
-    const data = await response.json();
-    return data;
-    }
-    else{
-      console.log("server returned some errors", response.status)
-      return []
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      console.log("server returned some errors", response.status);
+      return [];
     }
   } catch (error) {
-    console.error("error fetching data",error);
-    return []
+    console.error("error fetching data", error);
+    return [];
   }
 };
 
-const createBlog = async(blogObj)=>{
-  try{
+const createBlog = async (blogObj) => {
+  try {
     const token = getToken();
-    const response = await fetch(baseUrl,{
+    const response = await fetch(baseUrl, {
       method: "POST",
-      headers:{
+      headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(blogObj)
-    })
-    if(!response.ok){
-      throw new Error("something went wrong", response.status)
+      body: JSON.stringify(blogObj),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Server error:", response.status, errorData);
+      return null;
     }
-    const data = await response.json()
-    return data
-  }catch(error){
-    console.error("unable to create blog")
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("unable to create blog", error);
+    return null;
   }
-}
-
+};
 
 export default { getAll, createBlog };

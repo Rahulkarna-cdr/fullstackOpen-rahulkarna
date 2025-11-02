@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import Notification from "./components/Notification";
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
+  const [notify,setNotify] = useState("")
   const [errorMessage, setErrorMessage] = useState("");
 
   const [formData, setFormData] = useState({
@@ -26,18 +29,25 @@ const App = () => {
     e.preventDefault();
     try {
       const user = await loginService.login({ username, password });
+      if(!user){
+        setUser(null)
+      }
       setUser(user);
-      console.log(user)
       setUsername("");
       setPassword("");
       localStorage.setItem("loggedUser", JSON.stringify(user));
+
+      // Fetch blogs after successful login
+      const blogs = await blogService.getAll();
+      setBlogs(blogs);
     } catch {
-      setErrorMessage("Invalid credentials");
+      setErrorMessage("wrong username or password");
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
     }
   };
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -80,26 +90,37 @@ const App = () => {
         url: formData.url,
         user: user.id
       });
-      setBlogs(blogs => [...blogs, newBlogs]);
-      setFormData({ title: "", author: "", url: "" });
-      
+
+      if (newBlogs) {
+        setBlogs((blogs) => [...blogs, newBlogs]);
+        setNotify(`a new blog ${newBlogs.title} by ${newBlogs.author} added`);
+        setFormData({ title: "", author: "", url: "" });
+        setTimeout(() => {
+          setNotify("");
+        }, 5000);
+      }
     };
     postBlogs();
   };
 
-useEffect(() => {
-  const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-  setUser(loggedUser);
-  const fetchBlogs = async () => {
-    const blogs = await blogService.getAll();
-    setBlogs(blogs);
-  };
-  fetchBlogs();
-}, []);
+  useEffect(() => {
+    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
+    setUser(loggedUser);
+
+    // Only fetch blogs if user is logged in
+    if (loggedUser) {
+      const fetchBlogs = async () => {
+        const blogs = await blogService.getAll();
+        setBlogs(blogs);
+      };
+      fetchBlogs();
+    }
+  }, []);
 
 
 return (
   <div>
+<Notification msg = {errorMessage} notification = {notify} />
     {!user && loginForm()}
     {user && (
       <>
