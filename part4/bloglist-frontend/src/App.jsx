@@ -3,7 +3,7 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Notification from "./components/Notification";
-import NewBlog from "./components/NewBlog";
+import NoteForm from "./components/NoteForm";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -136,7 +136,7 @@ return (
         <br />
         <div>
           <button onClick={()=>setToggle(true)}>Create new Blog</button>
-        {toggle && <NewBlog title={formData.title} author={formData.author} url={formData.url} handleCreate ={handleCreate} handleChange={handleChange} setToggle={setToggle}/> }
+        {toggle && <NoteForm title={formData.title} author={formData.author} url={formData.url} handleCreate ={handleCreate} handleChange={handleChange} setToggle={setToggle}/> }
         
         </div>
       </>
