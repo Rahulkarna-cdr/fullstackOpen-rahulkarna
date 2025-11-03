@@ -3,6 +3,7 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Notification from "./components/Notification";
+import NewBlog from "./components/NewBlog";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -11,6 +12,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [notify,setNotify] = useState("")
   const [errorMessage, setErrorMessage] = useState("");
+  const [toggle,setToggle] = useState(false)
 
   const [formData, setFormData] = useState({
     title: "",
@@ -18,13 +20,14 @@ const App = () => {
     url: "",
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+   const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+      };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -130,44 +133,11 @@ return (
         {blogs.map((blog) => (
           <Blog key={blog.id} blog={blog} />
         ))}
+        <br />
         <div>
-          <h2>Create New Blogs</h2>
-          <form onSubmit={handleCreate}>
-            <div>
-              <label>
-                title:
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                />
-              </label>
-            </div>
-            <div>
-              <label>
-                author:
-                <input
-                  type="text"
-                  name="author"
-                  value={formData.author}
-                  onChange={handleChange}
-                />
-              </label>
-            </div>
-            <div>
-              <label>
-                url:
-                <input
-                  type="text"
-                  name="url"
-                  value={formData.url}
-                  onChange={handleChange}
-                />
-              </label>
-            </div>
-            <button type="submit">Create</button>
-          </form>
+          <button onClick={()=>setToggle(true)}>Create new Blog</button>
+        {toggle && <NewBlog title={formData.title} author={formData.author} url={formData.url} handleCreate ={handleCreate} handleChange={handleChange} setToggle={setToggle}/> }
+        
         </div>
       </>
     )}
