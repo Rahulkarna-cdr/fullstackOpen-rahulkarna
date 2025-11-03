@@ -59,13 +59,19 @@ const createBlog = async (blogObj) => {
 const updateLikes = async (id, newLikes) =>{
   try{
     const token = getToken();
-  const response = await fetch(baseUrl/id,{
+  const response = await fetch(`${baseUrl}/${id}`,{
     method: "PUT",
     headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({likes: newLikes})
   })
+   if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Server error:", response.status, errorData);
+      return null;
+    }
   const data = await response.json()
   return data;
 }
@@ -75,5 +81,5 @@ catch(error){
 }
 }
 
-export default { getAll, createBlog,updateLikes};
+export default { getAll, createBlog, updateLikes};
 

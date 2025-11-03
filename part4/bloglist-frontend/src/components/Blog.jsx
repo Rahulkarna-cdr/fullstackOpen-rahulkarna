@@ -7,13 +7,18 @@ const Blog = ({ blog }) => {
   const [blogToggle, setBlogToggle] = useState(false)
   const [likes, setLikes] = useState(blog.likes)
 
-  const handleLike = ()=>{
-    setLikes(prev => {
-    const newLikes = prev + 1;
-    blogService.updateLikes(blog.id, newLikes);
-    return newLikes;
-    })
-  }
+  const handleLike = async () => {
+    const newLikes = likes + 1;
+    try {
+      const updatedBlog = await blogService.updateLikes(blog.id, newLikes);
+      if (updatedBlog) {
+        setLikes(updatedBlog.likes);
+      }
+    } catch (error) {
+      console.error("Failed to update likes", error);
+    }
+  };
+
   return(
   
   <div className="BlogOutline"> 
@@ -21,7 +26,7 @@ const Blog = ({ blog }) => {
 
     {blogToggle && <div>
     {blog.url} <br />
-    Likes: {blog.likes} <button onClick={handleLike}>like</button><br />
+    Likes: {likes} <button onClick={handleLike}>like</button><br />
     {blog.author} 
     </div>}
 
