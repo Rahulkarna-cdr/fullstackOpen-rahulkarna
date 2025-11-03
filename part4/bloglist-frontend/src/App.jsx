@@ -5,14 +5,15 @@ import loginService from "./services/login";
 import Notification from "./components/Notification";
 import NoteForm from "./components/NoteForm";
 
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [notify,setNotify] = useState("")
+  const [notify, setNotify] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [toggle,setToggle] = useState(false)
+  const [toggle, setToggle] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -20,20 +21,20 @@ const App = () => {
     url: "",
   });
 
-   const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-          ...prevData,
-          [name]: value,
-        }));
-      };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const user = await loginService.login({ username, password });
-      if(!user){
-        setUser(null)
+      if (!user) {
+        setUser(null);
       }
       setUser(user);
       setUsername("");
@@ -48,6 +49,24 @@ const App = () => {
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
+    }
+  };
+
+  const handleLike = async (blog) => {
+    try {
+      const updatedBlog = await blogService.updateLikes(
+        blog.id,
+        blog.likes + 1
+      );
+
+      if (updatedBlog) {
+        const newBlogs = blogs
+          .map((b) => (b.id === blog.id ? updatedBlog : b))
+          .sort((a, b) => b.likes - a.likes);
+        setBlogs(newBlogs);
+      }
+    } catch (error) {
+      console.error("Failed to update likes", error);
     }
   };
 
@@ -91,7 +110,7 @@ const App = () => {
         title: formData.title,
         author: formData.author,
         url: formData.url,
-        user: user.id
+        user: user.id,
       });
 
       if (newBlogs) {
@@ -120,28 +139,38 @@ const App = () => {
     }
   }, []);
 
-
-return (
-  <div>
-<Notification msg = {errorMessage} notification = {notify} />
-    {!user && loginForm()}
-    {user && (
-      <>
-        <h2>blogs</h2>
-        <p>{user.username} logged in <button onClick={handleLogOut}>Logout</button></p>
-        <br />
-        <div>
-          <button onClick={()=>setToggle(true)}>Create new Blog</button>
-        {toggle && <NoteForm title={formData.title} author={formData.author} url={formData.url} handleCreate ={handleCreate} handleChange={handleChange} setToggle={setToggle}/> }
-           {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
-        ))}
-        </div>
-      </>
-    )}
-  </div>
-);
+  return (
+    <div>
+      <Notification msg={errorMessage} notification={notify} />
+      {!user && loginForm()}
+      {user && (
+        <>
+          <h2>blogs</h2>
+          <p>
+            {user.username} logged in{" "}
+            <button onClick={handleLogOut}>Logout</button>
+          </p>
+          <br />
+          <div>
+            <button onClick={() => setToggle(true)}>Create new Blog</button>
+            {toggle && (
+              <NoteForm
+                title={formData.title}
+                author={formData.author}
+                url={formData.url}
+                handleCreate={handleCreate}
+                handleChange={handleChange}
+                setToggle={setToggle}
+              />
+            )}
+            {blogs.map((blog) => (
+              <Blog key={blog.id} blog={blog} handleLike={handleLike}/>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
 };
-
 
 export default App;
