@@ -128,16 +128,14 @@ return (
     {user && (
       <>
         <h2>blogs</h2>
-        <p>{user.username} logged in</p>
-        <button onClick={handleLogOut}>Logout</button>
-        {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
-        ))}
+        <p>{user.username} logged in <button onClick={handleLogOut}>Logout</button></p>
         <br />
         <div>
           <button onClick={()=>setToggle(true)}>Create new Blog</button>
         {toggle && <NoteForm title={formData.title} author={formData.author} url={formData.url} handleCreate ={handleCreate} handleChange={handleChange} setToggle={setToggle}/> }
-        
+           {blogs.map((blog) => (
+          <Blog key={blog.id} blog={blog} />
+        ))}
         </div>
       </>
     )}

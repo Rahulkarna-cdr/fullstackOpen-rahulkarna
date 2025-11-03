@@ -16,3 +16,10 @@
     background-color: rgb(192, 192, 192);
     font-size: large;
 }
+
+.BlogOutline{
+    border: 1px solid black;
+    padding-top: 10px;
+    padding-left: 2px;
+    margin-bottom: 5px;
+}
