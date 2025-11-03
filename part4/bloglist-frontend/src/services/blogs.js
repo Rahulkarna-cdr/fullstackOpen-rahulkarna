@@ -56,4 +56,24 @@ const createBlog = async (blogObj) => {
   }
 };
 
-export default { getAll, createBlog };
+const updateLikes = async (id, newLikes) =>{
+  try{
+    const token = getToken();
+  const response = await fetch(baseUrl/id,{
+    method: "PUT",
+    headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+  })
+  const data = await response.json()
+  return data;
+}
+catch(error){
+  console.error("unable to modify data", error)
+  return null;
+}
+}
+
+export default { getAll, createBlog,updateLikes};
+
