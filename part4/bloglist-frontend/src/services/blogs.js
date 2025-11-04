@@ -81,5 +81,26 @@ catch(error){
 }
 }
 
-export default { getAll, createBlog, updateLikes};
+const deleteBlog = async (id)=>{
+  try{
+  const token = getToken()
+  const response = await fetch(`${baseUrl}/${id}`,{
+    method: "DELETE",
+    headers:{
+      Authorization: `Bearer ${token}`
+    }
+  })
+  if(!response.ok){
+    console.log("something went wrong",response.status)
+    return null;
+  }
+  const data = await response.json()
+  return data;
+}catch(error){
+  console.error("unable to delete blog", error)
+  return null
+}
+}
+
+export default { getAll, createBlog, updateLikes,deleteBlog};
 

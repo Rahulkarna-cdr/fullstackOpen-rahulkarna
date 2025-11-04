@@ -1,7 +1,7 @@
 import "../main.css";
 import { useState } from "react";
 
-  const Blog = ({ blog, handleLike }) => {
+  const Blog = ({ blog, handleLike, handleDelete }) => {
   const [blogToggle, setBlogToggle] = useState(false);
 
   return (
@@ -16,7 +16,8 @@ import { useState } from "react";
           Likes: {blog.likes}{" "}
           <button onClick={() => handleLike(blog)}>like</button>
           <br />
-          {blog.author}
+          {blog.author} {" "}
+          <button className="delete" onClick={()=>handleDelete(blog)}>remove</button>
         </div>
       )}
     </div>

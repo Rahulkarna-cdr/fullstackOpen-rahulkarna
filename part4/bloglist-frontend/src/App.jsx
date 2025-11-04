@@ -5,7 +5,6 @@ import loginService from "./services/login";
 import Notification from "./components/Notification";
 import NoteForm from "./components/NoteForm";
 
-
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
@@ -70,6 +69,30 @@ const App = () => {
     }
   };
 
+  const handleDelete = async (blog) => {
+    try {
+      const confirmDelete = window.confirm(
+        `Remove blog ${blog.title} by ${blog.author}`
+      );
+      if (!confirmDelete) return;
+      await blogService.deleteBlog(blog.id);
+      setNotify("Blog Deleted Successfully");
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+      const updatedBlog = await blogService.getAll();
+      setBlogs(updatedBlog);
+    } catch (error) {
+      console.error("unable to delete blog", error);
+      setErrorMessage("Unable to Delete Blog");
+      setTimeout =
+        (() => {
+          setErrorMessage(null);
+        },
+        5000);
+    }
+  };
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -104,7 +127,6 @@ const App = () => {
 
   const handleCreate = (e) => {
     e.preventDefault();
-
     const postBlogs = async () => {
       const newBlogs = await blogService.createBlog({
         title: formData.title,
@@ -164,7 +186,12 @@ const App = () => {
               />
             )}
             {blogs.map((blog) => (
-              <Blog key={blog.id} blog={blog} handleLike={handleLike}/>
+              <Blog
+                key={blog.id}
+                blog={blog}
+                handleLike={handleLike}
+                handleDelete={handleDelete}
+              />
             ))}
           </div>
         </>
