@@ -1,8 +1,8 @@
-import "../main.css"
+import '../main.css'
 
 const Notification = ({ msg, notification }) => {
   if (!msg && !notification) {
-    return null;
+    return null
   }
   return (
     <div>
@@ -10,7 +10,7 @@ const Notification = ({ msg, notification }) => {
 
       {notification && <div className="success">{notification}</div>}
     </div>
-  );
-};
+  )
+}
 
-export default Notification;
+export default Notification

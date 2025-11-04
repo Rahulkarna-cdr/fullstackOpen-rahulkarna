@@ -1,97 +1,96 @@
-import { useState, useEffect } from "react";
-import Blog from "./components/Blog";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
-import Notification from "./components/Notification";
-import NoteForm from "./components/NoteForm";
+import { useState, useEffect } from 'react'
+import Blog from './components/Blog'
+import blogService from './services/blogs'
+import loginService from './services/login'
+import Notification from './components/Notification'
+import NoteForm from './components/NoteForm'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
-  const [notify, setNotify] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [toggle, setToggle] = useState(false);
+  const [blogs, setBlogs] = useState([])
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
+  const [notify, setNotify] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [toggle, setToggle] = useState(false)
 
   const [formData, setFormData] = useState({
-    title: "",
-    author: "",
-    url: "",
-  });
+    title: '',
+    author: '',
+    url: '',
+  })
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
-    }));
-  };
+    }))
+  }
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      const user = await loginService.login({ username, password });
+      const user = await loginService.login({ username, password })
       if (!user) {
-        setUser(null);
+        setUser(null)
       }
-      setUser(user);
-      setUsername("");
-      setPassword("");
-      localStorage.setItem("loggedUser", JSON.stringify(user));
+      setUser(user)
+      setUsername('')
+      setPassword('')
+      localStorage.setItem('loggedUser', JSON.stringify(user))
 
       // Fetch blogs after successful login
-      const blogs = await blogService.getAll();
-      setBlogs(blogs);
+      const blogs = await blogService.getAll()
+      setBlogs(blogs)
     } catch {
-      setErrorMessage("wrong username or password");
+      setErrorMessage('wrong username or password')
       setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+        setErrorMessage(null)
+      }, 5000)
     }
-  };
+  }
 
   const handleLike = async (blog) => {
     try {
       const updatedBlog = await blogService.updateLikes(
         blog.id,
         blog.likes + 1
-      );
+      )
 
       if (updatedBlog) {
         const newBlogs = blogs
           .map((b) => (b.id === blog.id ? updatedBlog : b))
-          .sort((a, b) => b.likes - a.likes);
-        setBlogs(newBlogs);
+          .sort((a, b) => b.likes - a.likes)
+        setBlogs(newBlogs)
       }
     } catch (error) {
-      console.error("Failed to update likes", error);
+      console.error('Failed to update likes', error)
     }
-  };
+  }
 
   const handleDelete = async (blog) => {
     try {
       const confirmDelete = window.confirm(
         `Remove blog ${blog.title} by ${blog.author}`
-      );
-      if (!confirmDelete) return;
-      await blogService.deleteBlog(blog.id);
-      setNotify("Blog Deleted Successfully");
+      )
+      if (!confirmDelete) return
+      await blogService.deleteBlog(blog.id)
+      setNotify('Blog Deleted Successfully')
       setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-      const updatedBlog = await blogService.getAll();
-      setBlogs(updatedBlog);
+        setNotify(null)
+      }, 5000)
+      const updatedBlog = await blogService.getAll()
+      setBlogs(updatedBlog)
     } catch (error) {
-      console.error("unable to delete blog", error);
-      setErrorMessage("Unable to Delete Blog");
-      setTimeout =
-        (() => {
-          setErrorMessage(null);
-        },
-        5000);
+      console.error('unable to delete blog', error)
+      setErrorMessage('Unable to Delete Blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      },
+      5000)
     }
-  };
+  }
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
@@ -118,48 +117,48 @@ const App = () => {
       </div>
       <button type="submit">login</button>
     </form>
-  );
+  )
 
   const handleLogOut = () => {
-    localStorage.removeItem("loggedUser");
-    setUser(null);
-  };
+    localStorage.removeItem('loggedUser')
+    setUser(null)
+  }
 
   const handleCreate = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     const postBlogs = async () => {
       const newBlogs = await blogService.createBlog({
         title: formData.title,
         author: formData.author,
         url: formData.url,
         user: user.id,
-      });
+      })
 
       if (newBlogs) {
-        setBlogs((blogs) => [...blogs, newBlogs]);
-        setNotify(`a new blog ${newBlogs.title} by ${newBlogs.author} added`);
-        setFormData({ title: "", author: "", url: "" });
+        setBlogs((blogs) => [...blogs, newBlogs])
+        setNotify(`a new blog ${newBlogs.title} by ${newBlogs.author} added`)
+        setFormData({ title: '', author: '', url: '' })
         setTimeout(() => {
-          setNotify("");
-        }, 5000);
+          setNotify('')
+        }, 5000)
       }
-    };
-    postBlogs();
-  };
+    }
+    postBlogs()
+  }
 
   useEffect(() => {
-    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
-    setUser(loggedUser);
+    const loggedUser = JSON.parse(localStorage.getItem('loggedUser'))
+    setUser(loggedUser)
 
     // Only fetch blogs if user is logged in
     if (loggedUser) {
       const fetchBlogs = async () => {
-        const blogs = await blogService.getAll();
-        setBlogs(blogs);
-      };
-      fetchBlogs();
+        const blogs = await blogService.getAll()
+        setBlogs(blogs)
+      }
+      fetchBlogs()
     }
-  }, []);
+  }, [])
 
   return (
     <div>
@@ -169,7 +168,7 @@ const App = () => {
         <>
           <h2>blogs</h2>
           <p>
-            {user.username} logged in{" "}
+            {user.username} logged in{' '}
             <button onClick={handleLogOut}>Logout</button>
           </p>
           <br />
@@ -197,7 +196,7 @@ const App = () => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
