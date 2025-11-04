@@ -1,23 +1,28 @@
-const express = require('express')
-const config = require('./utils/config')
-const mongoose = require('mongoose')
-const blogRouter = require('./controllers/blogController')
-const userRouter = require('./controllers/userController')
-const middleware = require('./middlewares/middleware')
-const loginRouter = require('./controllers/loginController')
-const app = express()
+const express = require("express");
+const config = require("./utils/config");
+const mongoose = require("mongoose");
+const blogRouter = require("./controllers/blogController");
+const userRouter = require("./controllers/userController");
+const middleware = require("./middlewares/middleware");
+const loginRouter = require("./controllers/loginController");
+const app = express();
 
-app.use(express.json())
-app.use('/api/blogs',middleware.userExtractor, blogRouter)
-app.use('/api/users', userRouter)
-app.use('/api/login', loginRouter)
+app.use(express.json());
+app.use("/api/blogs", middleware.userExtractor, blogRouter);
+app.use("/api/users", userRouter);
+app.use("/api/login", loginRouter);
 
-const mongoUrl = config.MONGODB_URI
-mongoose.connect(mongoUrl)
-console.log("connected to mongoDB")
+if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development") {
+  const testRouter = require("./controllers/test");
+  app.use("/api/testing", testRouter);
+}
 
-app.use(middleware.unknownEndPoint)
+const mongoUrl = config.MONGODB_URI;
+mongoose.connect(mongoUrl);
+console.log("connected to mongoDB");
 
-app.use(middleware.errorHandler)
+app.use(middleware.unknownEndPoint);
 
-module.exports = app
+app.use(middleware.errorHandler);
+
+module.exports = app;

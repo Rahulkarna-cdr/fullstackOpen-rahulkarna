@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
-import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login'
-import Notification from './components/Notification'
-import NoteForm from './components/NoteForm'
+import { useState, useEffect } from "react";
+import Blog from "./components/Blog";
+import blogService from "./services/blogs";
+import loginService from "./services/login";
+import Notification from "./components/Notification";
+import NoteForm from "./components/NoteForm";
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
