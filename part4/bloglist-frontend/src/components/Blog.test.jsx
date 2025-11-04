@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import Blog from "./Blog";
-import { expect } from "vitest";
+import { expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
 test("renders title but not details by default", () => {
@@ -47,12 +47,38 @@ describe("blogs URL and number of likes are shown when the button controlling th
     expect(screen.queryByText(/Likes:/)).toBeNull();
   });
 
-  test('after clicking, blogs URL and number of likes are displayed', async () => {
-    const user = userEvent.setup()
-    const button = screen.getByText('view')
-    await user.click(button)
-    expect(screen.getByText(blog.url, { exact: false })).toBeVisible()
-    expect(screen.getByText(/Likes: 6/)).toBeVisible()
+  test("after clicking, blogs URL and number of likes are displayed", async () => {
+    const user = userEvent.setup();
+    const button = screen.getByText("view");
+    await user.click(button);
+    expect(screen.getByText(blog.url, { exact: false })).toBeVisible();
+    expect(screen.getByText(/Likes: 6/)).toBeVisible();
   });
 });
 
+test("like button is clicked twice, event handler is called twice", async () => {
+  const blog = {
+    title: "testing content",
+    author: "Test",
+    url: "https://example.com/guide-to-mongodb",
+    likes: 6,
+  };
+
+  
+  const mockHandler = vi.fn();
+
+  render(<Blog blog={blog} handleLike={mockHandler} />);
+
+  const user = userEvent.setup();
+
+  
+  const viewButton = screen.getByText("view");
+  await user.click(viewButton);
+
+
+  const likeButton = screen.getByText("like");
+  await user.click(likeButton);
+  await user.click(likeButton);
+
+  expect(mockHandler).toHaveBeenCalledTimes(2);
+});
