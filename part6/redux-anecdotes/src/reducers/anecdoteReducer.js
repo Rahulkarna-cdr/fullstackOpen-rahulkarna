@@ -40,8 +40,9 @@ const reducer = (state = initialState, action) => {
       const newAnecdote = {
         content,
         id: getId(),
-        vote: 0
+        votes: 0
       }
+      console.log(newAnecdote.id)
       return [...state,newAnecdote]
     }
     default:
