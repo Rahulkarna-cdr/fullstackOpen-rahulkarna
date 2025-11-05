@@ -42,7 +42,7 @@ const reducer = (state = initialState, action) => {
         id: getId(),
         votes: 0
       }
-      console.log(newAnecdote.id)
+      console.log(newAnecdote.content)
       return [...state,newAnecdote]
     }
     default:
@@ -52,7 +52,7 @@ const reducer = (state = initialState, action) => {
 
 export const createAnecdote = (content)=>{
   return{
-    type: "create anecdote",
+    type: "createAnecdote",
     payload: {
       content
     }
