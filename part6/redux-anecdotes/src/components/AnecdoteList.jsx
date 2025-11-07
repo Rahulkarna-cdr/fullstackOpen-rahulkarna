@@ -3,9 +3,15 @@ import { voteIncrement } from "../reducers/anecdoteReducer";
 import { useSelector, useDispatch } from "react-redux";
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector((state) =>
-    [...state].sort((a, b) => b.votes - a.votes)
-  );
+  const anecdotes = useSelector(({ anecdotes, filter }) => {
+    const normalizedFilter = filter.trim().toLowerCase();
+
+    return anecdotes
+      .filter((anecdote) =>
+        anecdote.content.toLowerCase().includes(normalizedFilter)
+      )
+      .sort((a, b) => b.votes - a.votes);
+  });
 
   const dispatch = useDispatch();
 

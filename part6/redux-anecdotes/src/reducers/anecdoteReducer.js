@@ -69,4 +69,6 @@ export const voteIncrement = (id)=>{
 }
 
 
+
+
 export default reducer
