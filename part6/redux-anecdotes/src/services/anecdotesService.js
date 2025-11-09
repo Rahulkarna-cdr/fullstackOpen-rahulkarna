@@ -34,4 +34,15 @@ const createAnecdote = async (content) => {
     }
 }
 
-export default {getAll, createAnecdote};
+
+const updateVotes = async (anecdote) => {
+    const response = await fetch(`${baseUrl}/${anecdote.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ votes: anecdote.votes + 1 }),
+    });
+    if (!response.ok) throw new Error("failed to update votes");
+    return response.json();
+  };
+
+export default {getAll, createAnecdote, updateVotes};
