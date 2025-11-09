@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { setAnecdotes, voteIncrement } from "../reducers/anecdoteReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { setNotification, clearNotification } from "../reducers/notificationReducer";
-import anecdotesService from "../services/anecdotesService"
+import { getAllAnecdotes } from "../reducers/anecdoteReducer";
 
 const AnecdoteList = () => {
   const anecdotes = useSelector((state) => state.anecdotes);
@@ -21,12 +21,8 @@ const AnecdoteList = () => {
   };
 
   useEffect(()=>{
-    const gettingAnecdotes = async ()=>{
-      const response = await anecdotesService.getAll()
-      dispatch(setAnecdotes(response))
-    }
-    gettingAnecdotes()
-  },[])
+      dispatch(getAllAnecdotes())
+    },[])
 
   return (
     <div>
