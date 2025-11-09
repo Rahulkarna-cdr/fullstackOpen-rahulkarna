@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { setAnecdotes, voteIncrement } from "../reducers/anecdoteReducer";
+import { voteIncrement } from "../reducers/anecdoteReducer";
 import { useSelector, useDispatch } from "react-redux";
 import { setNotification, clearNotification } from "../reducers/notificationReducer";
 import { getAllAnecdotes } from "../reducers/anecdoteReducer";
