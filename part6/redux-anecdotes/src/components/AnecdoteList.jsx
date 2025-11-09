@@ -5,13 +5,10 @@ import { setNotification, clearNotification } from "../reducers/notificationRedu
 import anecdotesService from "../services/anecdotesService"
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector(({ anecdotes, filter }) => {
-    return anecdotes
-      .filter((anecdote) =>
-        anecdote.content.toLowerCase().includes(filter.toLowerCase())
-      )
-      .sort((a, b) => b.votes - a.votes);
-  });
+  const anecdotes = useSelector((state) => state.anecdotes);
+  const filter = useSelector(state => state.filter);
+  const filteredData = anecdotes.filter(anecdote => anecdote.content.toLowerCase().includes(filter.toLowerCase()))
+  const sortedData = filteredData.sort((a, b) => b.votes - a.votes)
 
   const dispatch = useDispatch();
 
@@ -25,8 +22,8 @@ const AnecdoteList = () => {
 
   useEffect(()=>{
     const gettingAnecdotes = async ()=>{
-      const anecdotes = await anecdotesService.getAll()
-      dispatch(setAnecdotes(anecdotes))
+      const response = await anecdotesService.getAll()
+      dispatch(setAnecdotes(response))
     }
     gettingAnecdotes()
   },[])
@@ -34,7 +31,7 @@ const AnecdoteList = () => {
   return (
     <div>
       <h2>Anecdotes</h2>
-      {anecdotes.map((anecdote) => (
+      {sortedData.map((anecdote) => (
         <div key={anecdote.id}>
           <div>{anecdote.content}</div>
           <div>
