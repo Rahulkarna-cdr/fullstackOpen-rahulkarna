@@ -1,11 +1,31 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useRef } from 'react'
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNotificationDispatch } from './context/NotificationContext'
 import anecdoteService from './services/anecdoteService'
 
 const App = () => {
   const queryClient = useQueryClient()
-  const {data: anecdotes,isLoading,isError} = useQuery({
+  const dispatch = useNotificationDispatch()
+  const timeoutId = useRef()
+
+  const showNotification = (message) => {
+    if (timeoutId.current) {
+      clearTimeout(timeoutId.current)
+    }
+    dispatch({ type: 'SHOW', payload: message })
+    timeoutId.current = setTimeout(() => {
+      dispatch({ type: 'HIDE' })
+      timeoutId.current = undefined
+    }, 5000)
+  }
+
+  const {
+    data: anecdotes,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['anecdotes'],
     queryFn: anecdoteService.getAll,
   })
@@ -18,6 +38,10 @@ const App = () => {
           anecdote.id === updatedAnecdote.id ? updatedAnecdote : anecdote,
         ),
       )
+      showNotification(`anecdote '${updatedAnecdote.content}' voted`)
+    },
+    onError: (error) => {
+      showNotification(error.message)
     },
   })
 
