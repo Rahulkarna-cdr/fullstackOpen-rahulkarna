@@ -60,6 +60,20 @@ const Anecdote = ({ anecdotes }) => {
     </div>
   );
 };
+const Notification = ({ message }) => {
+  if (!message) return null;
+  return (
+    <div
+      style={{
+        border: "4px solid #FF0080",
+        borderRadius: "4px",
+        padding: "5px",
+      }}
+    >
+      {message}
+    </div>
+  );
+};
 
 const About = () => (
   <div>
@@ -131,19 +145,27 @@ const App = () => {
 
     setAnecdotes(anecdotes.map((a) => (a.id === id ? voted : a)));
   };
+  const handleNotify = (message) => {
+    setNotification(message);
+    setTimeout(() => {
+      setNotification("");
+    }, 5000);
+  };
+
 
   return (
     <div>
       <BrowserRouter>
       <h1>Software anecdotes</h1>
       <Menu />
+        <Notification message={notification} />
         <Routes>
           <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
           <Route
             path="/anecdotes/:id"
             element={<Anecdote anecdotes={anecdotes} />}
           />
-          <Route path="/create" element={<CreateAnecdote addNew={addNew} />} />
+          <Route path="/create" element={<CreateAnecdote addNew={addNew} setNotification={handleNotify} />} />
           <Route path="/about" element={<About />} />
         </Routes>
         <Footer />
