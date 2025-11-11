@@ -7,21 +7,18 @@ const CreateNew = (props) => {
   const info = useField('text')
 
 
-    // const [content, setContent] = useState('')
-    // const [author, setAuthor] = useState('')
-    // const [info, setInfo] = useState('')
     const navigate = useNavigate()
   
   
     const handleSubmit = (e) => {
       e.preventDefault()
       props.addNew({
-        content: content.value,
-        author:author.value,
-        info:info.value,
+        content: content.inputField.value,
+        author:author.inputField.value,
+        info:info.inputField.value,
         votes: 0
       })
-      props.setNotification(`a new anecdote ${content.value} created!`);
+      props.setNotification(`a new anecdote ${content.inputField.value} created!`);
       navigate('/')
     }
   
@@ -31,19 +28,19 @@ const CreateNew = (props) => {
         <form onSubmit={handleSubmit}>
           <div>
             content
-            <input {...content} />
+            <input {...content.inputField} />
           </div>
           <div>
             author
-            <input {...author} />
+            <input {...author.inputField} />
           </div>
           <div>
             url for more info
-            <input {...info} />
+            <input {...info.inputField} />
           </div>
           <button type='submit'>create</button>
         </form>
-          <button onClick={()=>{content.reset;author.reset;info.reset}}>reset</button>
+          <button onClick={()=>{content.reset();author.reset();info.reset()}}>reset</button>
       </div>
     )
   
