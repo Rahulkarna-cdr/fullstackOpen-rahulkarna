@@ -1,8 +1,8 @@
  const errorHandler = (err,req,res,next)=>{
     console.error(err)
 
-    if(err.name==="SequelizeValdiationError"){
-        return res.json(400).json({err:err.message})
+    if(err.name==="SequelizeValidiationError"){
+        return res.status(400).json({err: err.errors[0].message})
     }
 
     if(err.name==="SequelizeDatabaseError"){
