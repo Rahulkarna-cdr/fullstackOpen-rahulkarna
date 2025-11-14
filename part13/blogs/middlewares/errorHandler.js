@@ -1,15 +1,15 @@
- const errorHandler = (req,res,next,err)=>{
+ const errorHandler = (err,req,res,next)=>{
     console.error(err)
 
     if(err.name==="SequelizeValdiationError"){
-        return res.json(500).json({err:err.message})
+        return res.json(400).json({err:err.message})
     }
 
     if(err.name==="SequelizeDatabaseError"){
-        return res.status(500).json({err: err.msg})
+        return res.status(500).json({err: err.message})
     }
 
-    res.status(500).json({err: err.msg})
+    res.status(500).json({err: err.message || "Internal Server Error"})
 
  }
 
