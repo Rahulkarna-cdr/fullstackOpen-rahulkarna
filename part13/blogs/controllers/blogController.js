@@ -22,6 +22,7 @@ blogRouter.get("/", async (req, res) => {
       model: User,
       attributes: ["name", "username"]
     },
+    order: [["likes", "DESC"]],
   });
   res.status(200).json(blogs);
 });
