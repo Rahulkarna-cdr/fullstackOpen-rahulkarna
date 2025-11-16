@@ -1,10 +1,16 @@
 const blogRouter = require("express").Router();
 const tokenExtractor = require('../middlewares/authMiddleware')
 
-const Blog = require("../models/blog");
+const {Blog, User} = require("../models");
 
 blogRouter.get("/", async (req, res) => {
-  const blogs = await Blog.findAll();
+  const blogs = await Blog.findAll({
+    attributes: { exclude: ["user_id"] },
+    include: {
+      model: User,
+      attributes: ["name", "username"]
+    }
+  });
   res.status(200).json(blogs);
 });
 
