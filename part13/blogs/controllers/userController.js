@@ -6,7 +6,7 @@ userRouter.get("/",async (req,res)=>{
     const users = await User.findAll({
         include: {
             model: Blog,
-            attributes: { exclude: ["user_id"] }
+            attributes: ["title"]
         }
     });
     res.status(200).json(users)
