@@ -1,4 +1,5 @@
 const blogRouter = require("express").Router();
+const tokenExtractor = require('../middlewares/authMiddleware')
 
 const Blog = require("../models/blog");
 
@@ -7,7 +8,7 @@ blogRouter.get("/", async (req, res) => {
   res.status(200).json(blogs);
 });
 
-blogRouter.post("/", async (req, res) => {
+blogRouter.post("/",tokenExtractor, async (req, res) => {
     const { author, url, title, likes } = req.body;
     if (!url || !title) {
       res.status(400).json({ error: "url and title are required" });

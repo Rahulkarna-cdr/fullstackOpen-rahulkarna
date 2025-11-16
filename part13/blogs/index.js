@@ -6,11 +6,14 @@ const errorHandler = require("./middlewares/errorHandler")
 
 const blogRouter = require("./controllers/blogController")
 const userRouter = require("./controllers/userController")
+const loginRouter = require("./controllers/loginController")
 
 app.use(express.json());
 
 app.use("/api/blogs", blogRouter)
 app.use("/api/users", userRouter)
+app.use("/api/login", loginRouter)
+
 app.use(errorHandler)
 
 
