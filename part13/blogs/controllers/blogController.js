@@ -18,7 +18,7 @@ blogRouter.post("/",tokenExtractor, async (req, res) => {
       url,
       title,
       likes: likes || 0,
-      userId: req.user.id
+      user_id: req.user.id
     });
 
     await blog.save();
@@ -44,7 +44,7 @@ blogRouter.delete("/:id",tokenExtractor, async (req, res) => {
     if (!blog) {
       return res.status(404).json({ error: "Unable to find the blog" });
     }
-    if(blog.userId!==req.user.id){
+    if(blog.user_id!==req.user.id){
       return res.status(403).json({error:"only own blogs can be deleted"})
     }
     await Blog.destroy();
