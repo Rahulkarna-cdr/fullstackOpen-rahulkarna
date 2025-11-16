@@ -36,7 +36,7 @@ blogRouter.put("/:id",async (req,res)=>{
         res.status(200).json({msg: "successfully changed likes"})
 })
 
-blogRouter.delete("/:id", async (req, res) => {
+blogRouter.delete("/:id",tokenExtractor, async (req, res) => {
     const id = req.params.id;
     const blog = await Blog.findByPk(id);
     if (!blog) {
