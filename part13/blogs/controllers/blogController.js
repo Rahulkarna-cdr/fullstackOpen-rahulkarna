@@ -27,7 +27,7 @@ blogRouter.get("/", async (req, res) => {
 });
 
 blogRouter.post("/",tokenExtractor, async (req, res) => {
-    const { author, url, title, likes } = req.body;
+    const { author, url, title, likes, year } = req.body;
     if (!url || !title) {
       return res.status(400).json({ error: "url and title are required" });
     }
@@ -36,6 +36,7 @@ blogRouter.post("/",tokenExtractor, async (req, res) => {
       url,
       title,
       likes: likes || 0,
+      year,
       user_id: req.user.id
     });
 
