@@ -14,7 +14,7 @@ require("./models");
 
 app.use(express.json());
 
-app.get("/api/author",async (req,res)=>{
+app.get("/api/authors",async (req,res)=>{
   try{
   const authors = await Blog.findAll({
     attributes: [
@@ -39,7 +39,6 @@ app.use(errorHandler);
 
 const start = async () => {
   await connectToDatabase();
-  await sequelize.sync({ alter: true });
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
