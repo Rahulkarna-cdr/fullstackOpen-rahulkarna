@@ -1,4 +1,5 @@
 const readingListRouter = require("express").Router();
+const tokenExtractor = require("../middlewares/authMiddleware");
 const { ReadingList, Blog, User } = require("../models");
 
 readingListRouter.post("/", async (req, res) => {
@@ -9,7 +10,6 @@ readingListRouter.post("/", async (req, res) => {
   }
 
   try {
-    // Check if blog and user exist
     const blog = await Blog.findByPk(blogId);
     const user = await User.findByPk(userId);
 
@@ -20,7 +20,6 @@ readingListRouter.post("/", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Check if already in reading list
     const existing = await ReadingList.findOne({
       where: { user_id: userId, blog_id: blogId }
     });
@@ -29,7 +28,6 @@ readingListRouter.post("/", async (req, res) => {
       return res.status(400).json({ error: "Blog already in reading list" });
     }
 
-    // Add to reading list
     const readingListItem = await ReadingList.create({
       user_id: userId,
       blog_id: blogId,
@@ -41,5 +39,37 @@ readingListRouter.post("/", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+readingListRouter.put("/:id", tokenExtractor, async (req, res) => {
+    const id = req.params.id;  
+    const { read } = req.body;
+  
+    if (read === undefined) {
+      return res.status(400).json({ error: "read field is required" });
+    }
+  
+    if (typeof read !== 'boolean') {
+      return res.status(400).json({ error: "read must be a boolean" });
+    }
+  
+    try {
+      const readingListItem = await ReadingList.findByPk(id);
+  
+      if (!readingListItem) {
+        return res.status(404).json({ error: "Reading list entry not found" });
+      }
+  
+      if (readingListItem.user_id !== req.user.id) {
+        return res.status(403).json({ error: "You can only mark your own reading list items as read" });
+      }
+  
+      readingListItem.read = read;
+      await readingListItem.save();
+  
+      res.status(200).json(readingListItem);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
 module.exports = readingListRouter;
