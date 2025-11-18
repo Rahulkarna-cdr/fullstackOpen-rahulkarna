@@ -9,6 +9,7 @@ const errorHandler = require("./middlewares/errorHandler");
 const blogRouter = require("./controllers/blogController");
 const userRouter = require("./controllers/userController");
 const loginRouter = require("./controllers/loginController");
+const readingListRouter = require("./controllers/readingListController")
 
 require("./models");
 
@@ -34,6 +35,7 @@ app.get("/api/authors",async (req,res)=>{
 app.use("/api/blogs", blogRouter);
 app.use("/api/users", userRouter);
 app.use("/api/login", loginRouter);
+app.use("/api/readinglists", readingListRouter);
 
 app.use(errorHandler);
 

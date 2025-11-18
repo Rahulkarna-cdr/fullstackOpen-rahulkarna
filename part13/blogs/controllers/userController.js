@@ -2,6 +2,28 @@ const userRouter = require("express").Router()
 
 const {User, Blog} = require("../models")
 
+userRouter.get("/:id", async (req, res) => {
+    const id = req.params.id;
+    
+    const user = await User.findByPk(id, {
+      attributes: { exclude: ["password"] },
+      include: {
+        model: Blog,
+        as: 'readings',
+        attributes: ["id", "url", "title", "author", "likes", "year"],
+        through: {
+          attributes: []  
+        }
+      }
+    });
+  
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+  
+    res.status(200).json(user);
+  });
+
 userRouter.get("/",async (req,res)=>{
     const users = await User.findAll({
         include: {
