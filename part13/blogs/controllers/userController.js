@@ -5,16 +5,25 @@ const {User, Blog} = require("../models")
 userRouter.get("/:id", async (req, res) => {
     const id = req.params.id;
     
-    const user = await User.findByPk(id, {
-      attributes: { exclude: ["password"] },
-      include: {
+    const includeOptions = {
         model: Blog,
         as: 'readings',
         attributes: ["id", "url", "title", "author", "likes", "year"],
         through: {
-          attributes: ['id','read']  
+          attributes: ['id','read']
         }
+      };
+  
+      if (req.query.read !== undefined) {
+        const readValue = req.query.read === 'true';        
+        includeOptions.through.where = {
+          read: readValue
+        };
       }
+
+    const user = await User.findByPk(id, {
+      attributes: { exclude: ["password"] },
+      include: includeOptions
     });
   
     if (!user) {
