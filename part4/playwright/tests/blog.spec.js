@@ -179,4 +179,72 @@ describe("Blog app", () => {
       ).not.toBeVisible();
     });
   });
+
+  describe("Blog ordering", () => {
+    beforeEach(async ({ page }) => {
+      await page.getByLabel("username").fill("alison");
+      await page.getByLabel("password").fill("password");
+      await page.getByRole("button", { name: "login" }).click();
+
+      await expect(page.getByText("alison logged in")).toBeVisible();
+    });
+
+    test("blogs are ordered by likes, most likes first", async ({ page }) => {
+      const createBlog = async (title, author, url) => {
+        await page.getByRole("button", { name: "Create new Blog" }).click();
+        await page.getByLabel("title").fill(title);
+        await page.getByLabel("author").fill(author);
+        await page.getByLabel("url").fill(url);
+        await page.getByRole("button", { name: "Create" }).click();
+        await expect(page.getByText(title)).toBeVisible();
+      };
+
+      await createBlog("Blog with 0 likes", "Author 1", "https://blog1.com");
+      await createBlog("Blog with 2 likes", "Author 2", "https://blog2.com");
+      await createBlog("Blog with 1 like", "Author 3", "https://blog3.com");
+
+      const likeBlog = async (title, times) => {
+        const blogContainer = page
+          .locator(".BlogOutline")
+          .filter({ hasText: title })
+          .first();
+        await blogContainer.getByRole("button", { name: "view" }).click();
+
+        for (let i = 0; i < times; i++) {
+          await blogContainer.getByRole("button", { name: "like" }).click();
+          await page.waitForTimeout(300);
+        }
+      };
+
+      await likeBlog("Blog with 2 likes", 2);
+      await likeBlog("Blog with 1 like", 1);
+
+      await page.waitForTimeout(500);
+
+      const allBlogContainers = page.locator(".BlogOutline");
+      const blogCount = await allBlogContainers.count();
+
+      const blogPositions = {};
+
+      for (let i = 0; i < blogCount; i++) {
+        const container = allBlogContainers.nth(i);
+        const text = await container.textContent();
+
+        if (text.includes("Blog with 2 likes")) {
+          blogPositions["Blog with 2 likes"] = i;
+        } else if (text.includes("Blog with 1 like")) {
+          blogPositions["Blog with 1 like"] = i;
+        } else if (text.includes("Blog with 0 likes")) {
+          blogPositions["Blog with 0 likes"] = i;
+        }
+      }
+
+      expect(blogPositions["Blog with 2 likes"]).toBeLessThan(
+        blogPositions["Blog with 1 like"]
+      );
+      expect(blogPositions["Blog with 1 like"]).toBeLessThan(
+        blogPositions["Blog with 0 likes"]
+      );
+    });
+  });
 });
