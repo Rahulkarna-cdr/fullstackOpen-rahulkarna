@@ -113,4 +113,70 @@ describe("Blog app", () => {
       await expect(page.getByText("Blog to Delete")).not.toBeVisible();
     });
   });
+
+  describe("Blog visibility", () => {
+    beforeEach(async ({ page, request }) => {
+      await request.post("http://localhost:3001/api/testing/reset");
+
+      await request.post("http://localhost:3001/api/users", {
+        data: {
+          name: "Alison",
+          username: "alison",
+          password: "password",
+        },
+      });
+
+      await request.post("http://localhost:3001/api/users", {
+        data: {
+          name: "Bob",
+          username: "bob",
+          password: "password",
+        },
+      });
+
+      await page.goto("http://localhost:5173");
+    });
+
+    test("only the user who created the blog sees the delete button", async ({
+      page,
+    }) => {
+      await page.getByLabel("username").fill("alison");
+      await page.getByLabel("password").fill("password");
+      await page.getByRole("button", { name: "login" }).click();
+
+      await expect(page.getByText("alison logged in")).toBeVisible();
+
+      await page.getByRole("button", { name: "Create new Blog" }).click();
+
+      await page.getByLabel("title").fill("Alison's Blog");
+      await page.getByLabel("author").fill("Alison");
+      await page.getByLabel("url").fill("https://alison.com");
+
+      await page.getByRole("button", { name: "Create" }).click();
+
+      await expect(page.getByText("Alison's Blog")).toBeVisible();
+
+      await page.getByRole("button", { name: "view" }).click();
+
+      await expect(page.getByRole("button", { name: "remove" })).toBeVisible();
+
+      await page.getByRole("button", { name: "Logout" }).click();
+
+      await expect(page.getByText("log in to application")).toBeVisible();
+
+      await page.getByLabel("username").fill("bob");
+      await page.getByLabel("password").fill("password");
+      await page.getByRole("button", { name: "login" }).click();
+
+      await expect(page.getByText("bob logged in")).toBeVisible();
+
+      await expect(page.getByText("Alison's Blog")).toBeVisible();
+
+      await page.getByRole("button", { name: "view" }).click();
+
+      await expect(
+        page.getByRole("button", { name: "remove" })
+      ).not.toBeVisible();
+    });
+  });
 });
