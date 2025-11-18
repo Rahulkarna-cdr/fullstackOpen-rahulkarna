@@ -86,5 +86,31 @@ describe("Blog app", () => {
 
       await expect(page.getByText("Likes: 1")).toBeVisible();
     });
+
+    test("user who created the blog can delete it", async ({ page }) => {
+      await page.getByRole("button", { name: "Create new Blog" }).click();
+
+      await page.getByLabel("title").fill("Blog to Delete");
+      await page.getByLabel("author").fill("Test Author");
+      await page.getByLabel("url").fill("https://test.com");
+
+      await page.getByRole("button", { name: "Create" }).click();
+
+      await expect(page.getByText("Blog to Delete")).toBeVisible();
+
+      await page.getByRole("button", { name: "view" }).click();
+
+      page.once("dialog", async (dialog) => {
+        expect(dialog.type()).toBe("confirm");
+        expect(dialog.message()).toBe(
+          "Remove blog Blog to Delete by Test Author"
+        );
+        await dialog.accept();
+      });
+
+      await page.getByRole("button", { name: "remove" }).click();
+
+      await expect(page.getByText("Blog to Delete")).not.toBeVisible();
+    });
   });
 });
