@@ -2,10 +2,8 @@ const { test, expect, beforeEach, describe } = require("@playwright/test");
 
 describe("Blog app", () => {
   beforeEach(async ({ page, request }) => {
-    // Empty the database
     await request.post("http://localhost:3001/api/testing/reset");
 
-    // Create a user for the backend
     await request.post("http://localhost:3001/api/users", {
       data: {
         name: "Alison",
@@ -26,33 +24,47 @@ describe("Blog app", () => {
 
   describe("Login", () => {
     test("succeeds with correct credentials", async ({ page }) => {
-      // Fill in the login form with correct credentials
       await page.getByLabel("username").fill("alison");
       await page.getByLabel("password").fill("password");
 
-      // Click login button
       await page.getByRole("button", { name: "login" }).click();
 
-      // Check that we're logged in - should see the username
       await expect(page.getByText("alison logged in")).toBeVisible();
     });
 
     test("fails with wrong credentials", async ({ page }) => {
-      // Fill in the login form with wrong password
       await page.getByLabel("username").fill("alison");
       await page.getByLabel("password").fill("wrongpassword");
 
-      // Click login button
       await page.getByRole("button", { name: "login" }).click();
 
-      // Should show an error message
       await expect(page.getByText("wrong username or password")).toBeVisible();
 
-      // Should still be on login page (not logged in)
       await expect(page.getByText("log in to application")).toBeVisible();
 
-      // Should NOT see logged in message
       await expect(page.getByText("alison logged in")).not.toBeVisible();
+    });
+  });
+
+  describe("When logged in", () => {
+    beforeEach(async ({ page }) => {
+      await page.getByLabel("username").fill("alison");
+      await page.getByLabel("password").fill("password");
+      await page.getByRole("button", { name: "login" }).click();
+
+      await expect(page.getByText("alison logged in")).toBeVisible();
+    });
+
+    test("a new blog can be created", async ({ page }) => {
+      await page.getByRole("button", { name: "Create new Blog" }).click();
+
+      await page.getByLabel("title").fill("Test Blog Title");
+      await page.getByLabel("author").fill("Test Author");
+      await page.getByLabel("url").fill("https://test.com");
+
+      await page.getByRole("button", { name: "Create" }).click();
+
+      await expect(page.getByText("Test Blog Title")).toBeVisible();
     });
   });
 });
